@@ -38,7 +38,7 @@ public class Book extends BaseEntity<Integer>{
 
     @Override
     public String toString() {
-        return "Book{" +
+        return "Book{" + " fff "
                 "Name: " + name + '\'' +
                 "} " + super.toString();
     }
