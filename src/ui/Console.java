@@ -1,0 +1,74 @@
+package src.ui;
+
+import ro.ubb.catalog.domain.Student;
+import ro.ubb.catalog.domain.validators.ValidatorException;
+import ro.ubb.catalog.service.StudentService;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Set;
+
+/**
+ * @author radu.
+ */
+public class Console {
+    private ClientService clientService;
+    private BookService bookService
+
+    public Console(ClientService clientService, BookService bookService) {
+        this.clientService = clientService;
+        this.bookService = bookService;
+    }
+
+    public void runConsole() {
+//        addStudents();
+        printAllStudents();
+        filterStudents();
+    }
+
+    private void filterStudents() {
+        System.out.println("filtered students (name containing 's2'):");
+        Set<Student> students = studentService.filterStudentsByName("s2");
+        students.stream().forEach(System.out::println);
+    }
+
+    private void printAllStudents() {
+        Set<Student> students = studentService.getAllStudents();
+        students.stream().forEach(System.out::println);
+    }
+
+    private void addStudents() {
+        while (true) {
+            Student student = readStudent();
+            if (student == null || student.getId() < 0) {
+                break;
+            }
+            try {
+                studentService.addStudent(student);
+            } catch (ValidatorException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private Student readStudent() {
+        System.out.println("Read student {id,serialNumber, name, group}");
+
+        BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
+        try {
+            Long id = Long.valueOf(bufferRead.readLine());// ...
+            String serialNumber = bufferRead.readLine();
+            String name = bufferRead.readLine();
+            int group = Integer.parseInt(bufferRead.readLine());// ...
+
+            Student student = new Student(serialNumber, name, group);
+            student.setId(id);
+
+            return student;
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+}
