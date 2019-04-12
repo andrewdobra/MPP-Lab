@@ -1,8 +1,7 @@
-package src.repository;
+package repository;
 
-import ro.ubb.catalog.domain.Student;
-import ro.ubb.catalog.domain.validators.Validator;
-import ro.ubb.catalog.domain.validators.ValidatorException;
+import domain.Book;
+import domain.validators.*;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -17,10 +16,10 @@ import java.util.Optional;
 /**
  * @author radu.
  */
-public class StudentFileRepository extends InMemoryRepository<Long, Student> {
+public class BookFileRepository extends InMemoryRepository<Long, Book> {
     private String fileName;
 
-    public StudentFileRepository(Validator<Student> validator, String fileName) {
+    public BookFileRepository(Validator<Book> validator, String fileName) {
         super(validator);
         this.fileName = fileName;
 
@@ -35,15 +34,12 @@ public class StudentFileRepository extends InMemoryRepository<Long, Student> {
                 List<String> items = Arrays.asList(line.split(","));
 
                 Long id = Long.valueOf(items.get(0));
-                String serialNumber = items.get(1);
-                String name = items.get((2));
-                int group = Integer.parseInt(items.get(3));
+                String name = items.get(1);
 
-                Student student = new Student(serialNumber, name, group);
-                student.setId(id);
+                Book book = new Book(id, name);
 
                 try {
-                    super.save(student);
+                    super.save(book);
                 } catch (ValidatorException e) {
                     e.printStackTrace();
                 }
@@ -54,8 +50,8 @@ public class StudentFileRepository extends InMemoryRepository<Long, Student> {
     }
 
     @Override
-    public Optional<Student> save(Student entity) throws ValidatorException {
-        Optional<Student> optional = super.save(entity);
+    public Optional<Book> save(Book entity) throws ValidatorException {
+        Optional<Book> optional = super.save(entity);
         if (optional.isPresent()) {
             return optional;
         }
@@ -63,12 +59,12 @@ public class StudentFileRepository extends InMemoryRepository<Long, Student> {
         return Optional.empty();
     }
 
-    private void saveToFile(Student entity) {
+    private void saveToFile(Book entity) {
         Path path = Paths.get(fileName);
 
         try (BufferedWriter bufferedWriter = Files.newBufferedWriter(path, StandardOpenOption.APPEND)) {
             bufferedWriter.write(
-                    entity.getId() + "," + entity.getSerialNumber() + "," + entity.getName() + "," + entity.getGroup());
+                    entity.getId() + "," + entity.getName());
             bufferedWriter.newLine();
         } catch (IOException e) {
             e.printStackTrace();

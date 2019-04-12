@@ -1,5 +1,5 @@
-package src.domain.validators;
-import src.domain.Client;
+package domain.validators;
+import domain.Client;
 
 /**
  * @author radu.
@@ -10,6 +10,6 @@ public class ClientValidator implements Validator<Client> {
         //TODO validate client
         if (entity != null)
             return;
-        else throw ValidatorException;
+        else throw new ValidatorException("Client can not be null.");
     }
 }

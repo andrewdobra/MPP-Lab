@@ -1,7 +1,7 @@
-package ro.ubb.catalog.repository;
+package repository;
 
-import ro.ubb.catalog.domain.BaseEntity;
-import ro.ubb.catalog.domain.validators.ValidatorException;
+import domain.BaseEntity;
+import domain.validators.*;
 
 import java.util.Optional;
 

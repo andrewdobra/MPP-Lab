@@ -1,4 +1,4 @@
-package src.domain.validators;
+package domain.validators;
 
 /**
  * Created by radu.

@@ -1,14 +1,15 @@
-package src.domain;
+package domain;
 
 /**
  * @author radu.
  *
  */
 
-public class Client extends BaseEntity<Integer>{
+public class Client extends BaseEntity<Long>{
     private String name;
 
-    public Client(String name) {
+    public Client(Long id, String name) {
+        this.setId(id);
         this.name = name;
     }
 
@@ -39,7 +40,8 @@ public class Client extends BaseEntity<Integer>{
     @Override
     public String toString() {
         return "Client{" +
-                "Name: " + name + '\'' +
-                "} " + super.toString();
+                "ID: " + this.getId() +
+                "; Name: " + name +
+                "} ";
     }
 }

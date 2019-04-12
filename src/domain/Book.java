@@ -1,14 +1,15 @@
-package ro.ubb.catalog.domain;
+package domain;
 
 /**
  * @author radu.
  *
  */
 
-public class Book extends BaseEntity<Integer>{
+public class Book extends BaseEntity<Long>{
     private String name;
 
-    public Book(String name) {
+    public Book(Long id, String name) {
+        this.setId(id);
         this.name = name;
     }
 
@@ -27,7 +28,7 @@ public class Book extends BaseEntity<Integer>{
 
         Book book = (Book) o;
 
-        return name.equals(Book.name);
+        return name.equals(book.getName());
     }
 
     @Override
@@ -39,7 +40,8 @@ public class Book extends BaseEntity<Integer>{
     @Override
     public String toString() {
         return "Book{" +
-                "Name: " + name + '\'' +
-                "} " + super.toString();
+                "ID: " + this.getId() +
+                "; Name: " + name +
+                "} ";
     }
 }

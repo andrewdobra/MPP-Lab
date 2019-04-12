@@ -1,10 +1,10 @@
-package src.domain.validators;
+package domain.validators;
 
 /**
  * @author radu.
  */
 
-public class ValidatorException extends CatalogException {
+public class ValidatorException extends BookstoreException {
     public ValidatorException(String message) {
         super(message);
     }
