@@ -26,11 +26,44 @@ public class ClientFileRepository extends InMemoryRepository<Long, Client> {
         loadData();
     }
 
+    @Override
+    public Optional<Client> delete(Long aLong) {
+        Optional<Client> result = super.delete(aLong);
+
+        if(result.isPresent())
+            saveFile(); //if something was removed then save the changes
+
+        return result;
+    }
+
+    /* rewrites the file*/
+    public void saveFile() {
+        Path path = Paths.get(fileName);
+
+        try (BufferedWriter bufferedWriter = Files.newBufferedWriter(path)) {
+            entities.keySet().forEach(key -> {
+                try
+                {
+                    bufferedWriter.write(
+                            key + "," + entities.get(key).getName());
+                    bufferedWriter.newLine();
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void loadData() {
         Path path = Paths.get(fileName);
 
         try {
             Files.lines(path).forEach(line -> {
+                System.out.println(line);
                 List<String> items = Arrays.asList(line.split(","));
 
                 Long id = Long.valueOf(items.get(0));

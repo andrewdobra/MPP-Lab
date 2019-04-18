@@ -26,6 +26,7 @@ public class BookFileRepository extends InMemoryRepository<Long, Book> {
         loadData();
     }
 
+
     private void loadData() {
         Path path = Paths.get(fileName);
 
@@ -70,4 +71,36 @@ public class BookFileRepository extends InMemoryRepository<Long, Book> {
             e.printStackTrace();
         }
     }
+    @Override
+    public Optional<Book> delete(Long aLong) {
+        Optional<Book> result = super.delete(aLong);
+
+        if(result.isPresent())
+            saveFile(); //if something was removed then save the changes
+
+        return result;
+    }
+
+    /* rewrites the file*/
+    public void saveFile() {
+        Path path = Paths.get(fileName);
+
+        try (BufferedWriter bufferedWriter = Files.newBufferedWriter(path)) {
+            entities.keySet().forEach(key -> {
+                try
+                {
+                    bufferedWriter.write(
+                            key + "," + entities.get(key).getName());
+                    bufferedWriter.newLine();
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
