@@ -1,5 +1,6 @@
 import domain.validators.*;
 import domain.*;
+import domain.xml.BookXML;
 import service.*;
 import repository.*;
 import ui.*;
@@ -22,8 +23,8 @@ public class Main {
 //        //in file repo
         Validator<Client> clientValidator = new ClientValidator();
         Validator<Book> bookValidator = new BookValidator();
-        Repository<Long, Client> clientRepository = new ClientFileRepository(clientValidator, "D:\\University\\MPP\\src\\data\\clients.txt");
-        Repository<Long, Book> bookRepository = new BookFileRepository(bookValidator, "D:\\University\\MPP\\src\\data\\books.txt");
+        Repository<Long, Client> clientRepository = new ClientFileRepository(clientValidator, "src\\data\\clients.txt");
+        Repository<Long, Book> bookRepository = new XMLRepository<Long,Book>(bookValidator,new BookXML(), "src\\data\\books.xml");//BookFileRepository(bookValidator, "src\\data\\books.txt");
         ClientService clientService = new ClientService(clientRepository);
         BookService bookService = new BookService(bookRepository);
         Console console = new Console(clientService, bookService);

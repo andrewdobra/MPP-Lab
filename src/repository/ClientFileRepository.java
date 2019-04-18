@@ -63,7 +63,6 @@ public class ClientFileRepository extends InMemoryRepository<Long, Client> {
 
         try {
             Files.lines(path).forEach(line -> {
-                System.out.println(line);
                 List<String> items = Arrays.asList(line.split(","));
 
                 Long id = Long.valueOf(items.get(0));

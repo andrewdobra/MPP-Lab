@@ -14,6 +14,7 @@ public class BaseEntity<ID> {
         this.id = id;
     }
 
+
     @Override
     public String toString() {
         return "BaseEntity{" +
