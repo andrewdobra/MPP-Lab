@@ -62,8 +62,8 @@ public class Console {
                     "4. Update Books\n" +
                     "5. Delete Clients\n" +
                     "6. Delete Books\n" +
-                    "7. Show all books\n" +
-                    "8. Show all clients\n" +
+                    "7. Show all clients\n" +
+                    "8. Show all books\n" +
                     "9. Filter clients\n" +
                     "10. Filter books\n" +
                     "0. Exit\n" +
