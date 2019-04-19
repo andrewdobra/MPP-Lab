@@ -95,11 +95,15 @@ public class Console {
     private void printAllClients() {
         Set<Client> clients = clientService.getAllClients();
         clients.stream().forEach(System.out::println);
+        if(clients.isEmpty())
+            System.out.println("There are no clients");
     }
 
     private void printAllBooks() {
         Set<Book> books = bookService.getAllBooks();
         books.stream().forEach(System.out::println);
+        if(books.isEmpty())
+            System.out.println("There are no books");
     }
 
     private void addClients() {
