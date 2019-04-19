@@ -10,6 +10,7 @@ import org.w3c.dom.NodeList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -76,6 +77,10 @@ public class XMLRepository<ID, T extends BaseEntity<Long>> extends InMemoryRepos
                     .newInstance()
                     .newDocumentBuilder()
                     .parse(fileName);
+
+            //erase previous data
+            doc.removeChild(doc.getDocumentElement());
+            doc.appendChild(doc.createElement("root"));
         }
         else
         {
@@ -96,6 +101,7 @@ public class XMLRepository<ID, T extends BaseEntity<Long>> extends InMemoryRepos
 
         Transformer transformer =
                 TransformerFactory.newInstance().newTransformer();
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");//for indentation
         transformer.transform(new DOMSource(root),
                 new StreamResult(new FileOutputStream(
                         fileName)));
@@ -126,9 +132,7 @@ public class XMLRepository<ID, T extends BaseEntity<Long>> extends InMemoryRepos
     @Override
     public Optional<T> save(T entity)  {
         Optional<T> optional = super.save(entity);
-        if (optional.isPresent()) {
-            return optional;
-        }
+
         try
         {
             saveFile();
@@ -136,6 +140,9 @@ public class XMLRepository<ID, T extends BaseEntity<Long>> extends InMemoryRepos
         catch (Exception e)
         {
             e.printStackTrace();
+        }
+        if (optional.isPresent()) {
+            return optional;
         }
         return Optional.empty();
     }

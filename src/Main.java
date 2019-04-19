@@ -37,7 +37,7 @@ public class Main {
 
         Repository<Long, Book> bookRepository;
         Repository<Long, Client> clientRepository;
-        System.out.println("Select repository (1 - text, 2 - xml, 3 - database");
+        System.out.println("Select repository (1 - text, 2 - xml, 3 - database)");
 
         int choice = new Scanner(System.in).nextInt();
         switch(choice)

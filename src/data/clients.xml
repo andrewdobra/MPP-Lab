@@ -1,1 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><root><elem id="1" name="John Doe"/></root>
+<?xml version="1.0" encoding="UTF-8"?><root>
+    <elem id="1" name="John Doe"/>
+    <elem id="2" name="Thomas"/>
+    <elem id="4" name="Robert"/>
+</root>
