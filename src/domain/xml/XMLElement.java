@@ -1,15 +1,18 @@
 package domain.xml;
 
 import domain.BaseEntity;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 public class XMLElement<T extends BaseEntity<Long>> {
 
-    public String toXML(T t)
+    public Element toXML(T t, Document doc)
     {
-        return "";
+        return null;
     }
 
-    public T fromXML(String s)
+    public T fromXML(Element e)
     {
         return null;
     }

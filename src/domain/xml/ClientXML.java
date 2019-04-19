@@ -1,18 +1,25 @@
 package domain.xml;
 
 import domain.Client;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 public class ClientXML extends XMLElement<Client> {
     @Override
-    public String toXML(Client t) {
-        return "<id>"+t.getId()+"</id>\n" +
-                "<name>"+t.getName()+"</name>\n";
+    public Element toXML(Client t, Document doc) {
+        Element e = doc.createElement("elem");
+        e.setAttribute("id",t.getId().toString());
+        e.setAttribute("name",t.getName());
+
+        return e;
     }
 
     @Override
-    public Client fromXML(String s) {
-        Long id = Long.parseLong(s.substring(s.indexOf("<id>")+"<id>".length(),s.indexOf("</id>")));
-        String name = s.substring(s.indexOf("<name>")+"<name>".length(),s.indexOf("</name>"));
+    public Client fromXML(Element e) {
+
+        Long id =Long.parseLong(e.getAttribute("id"));
+        String name = e.getAttribute("name");
         return new Client(id,name);
     }
 

@@ -1,17 +1,5 @@
-<root>
-<elem>
-<id>1</id>
-<name>The Picture of Dorian Gray</name>
-</elem>
-
-<elem>
-<id>2</id>
-<name>The Great Gatsby</name>
-</elem>
-
-<elem>
-<id>3</id>
-<name>David Copperfield</name>
-</elem>
-
+<?xml version="1.0" encoding="UTF-8"?><root>
+    <elem id="1" name="The Picture of Dorian Gray"/>
+    <elem id="2" name="The Great Gatsby"/>
+    <elem id="3" name="David Copperfield"/>
 </root>
