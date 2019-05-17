@@ -4,9 +4,13 @@ USE Bookstore;
 
 DROP TABLE IF EXISTS Books;
 DROP TABLE IF EXISTS Clients;
+DROP TABLE IF EXISTS Purchases;
 
 CREATE TABLE IF NOT EXISTS Books(id INT PRIMARY KEY, 
 					name VARCHAR(70));
 CREATE TABLE IF NOT EXISTS Clients(id INT PRIMARY KEY, 
 					name VARCHAR(70));
+CREATE TABLE IF NOT EXISTS Purchases(id INT PRIMARY KEY,
+					ClientID INT,
+					BookID INT);
                     

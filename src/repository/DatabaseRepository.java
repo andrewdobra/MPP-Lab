@@ -27,10 +27,10 @@ public class DatabaseRepository<ID,T extends BaseEntity<ID>> implements Reposito
     public Optional<T> findOne(ID id) {
         List<T> elements = new ArrayList<>();
         String query = "SELECT * FROM " + tableName + " WHERE id="+id.toString();
-        try (var connection = DriverManager.getConnection(URL, USERNAME,
+        try (Connection connection = DriverManager.getConnection(URL, USERNAME,
                 PASSWORD);
-             var statement = connection.prepareStatement(query);
-             var resultSet = statement.executeQuery()) {
+             PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
                 elements.add(sqlElement.fromSQL(resultSet));
@@ -49,10 +49,10 @@ public class DatabaseRepository<ID,T extends BaseEntity<ID>> implements Reposito
     public Iterable<T> findAll() {
         List<T> elements = new ArrayList<>();
         String query = "SELECT * FROM " + tableName;
-        try (var connection = DriverManager.getConnection(URL, USERNAME,
+        try (Connection connection = DriverManager.getConnection(URL, USERNAME,
                 PASSWORD);
-             var statement = connection.prepareStatement(query);
-             var resultSet = statement.executeQuery()) {
+             PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
                 elements.add(sqlElement.fromSQL(resultSet));
@@ -66,9 +66,9 @@ public class DatabaseRepository<ID,T extends BaseEntity<ID>> implements Reposito
     @Override
     public Optional<T> save(T entity) throws ValidatorException {
         String query = sqlElement.insertSQL(entity);
-        try (var connection = DriverManager.getConnection(URL, USERNAME,
+        try (Connection connection = DriverManager.getConnection(URL, USERNAME,
                 PASSWORD);
-             var statement = connection.prepareStatement(query)) {
+             PreparedStatement statement = connection.prepareStatement(query)) {
 
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -83,9 +83,9 @@ public class DatabaseRepository<ID,T extends BaseEntity<ID>> implements Reposito
         Optional<T> elem = findOne(id);
 
         String sql = "DELETE FROM "+ tableName + " WHERE id=?";
-        try (var connection = DriverManager.getConnection(URL, USERNAME,
+        try (Connection connection = DriverManager.getConnection(URL, USERNAME,
                 PASSWORD);
-             var statement = connection.prepareStatement(sql)) {
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, id.toString());
 
@@ -100,9 +100,9 @@ public class DatabaseRepository<ID,T extends BaseEntity<ID>> implements Reposito
     @Override
     public Optional<T> update(T entity) throws ValidatorException {
         String query = sqlElement.updateSQL(entity);
-        try (var connection = DriverManager.getConnection(URL, USERNAME,
+        try (Connection connection = DriverManager.getConnection(URL, USERNAME,
                 PASSWORD);
-             var statement = connection.prepareStatement(query)) {
+             PreparedStatement statement = connection.prepareStatement(query)) {
 
             statement.executeUpdate();
         } catch (SQLException e) {
