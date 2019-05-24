@@ -1,8 +1,5 @@
 package domain.validators;
 
-/**
- * Created by radu.
- */
 public class BookstoreException extends RuntimeException{
 
     public BookstoreException(String message) {

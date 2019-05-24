@@ -1,9 +1,6 @@
 package domain.validators;
 import domain.Client;
 
-/**
- * @author radu.
- */
 public class ClientValidator implements Validator<Client> {
     @Override
     public void validate(Client entity) throws ValidatorException {

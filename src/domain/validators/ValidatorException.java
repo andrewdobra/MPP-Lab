@@ -1,8 +1,5 @@
 package domain.validators;
 
-/**
- * @author radu.
- */
 
 public class ValidatorException extends BookstoreException {
     public ValidatorException(String message) {
