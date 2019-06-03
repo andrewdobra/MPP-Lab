@@ -17,7 +17,7 @@ public class PurchaseSQL extends SQLElement<Long, Purchase> {
 
     @Override
     public String insertSQL(Purchase purchase) {
-        return "INSERT INTO Purchases(id, ClientID, BookID) VALUES("+ purchase.getId() + "," + "\"" + purchase.getClientID() + "," + "\"" + purchase.getBookID()+"\")";
+        return "INSERT INTO Purchases(id, ClientID, BookID) VALUES("+ purchase.getId() + "," + "\"" + purchase.getClientID() + "\"," + "\"" + purchase.getBookID()+"\")";
     }
 
     @Override
