@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Optional;
 
 public class DatabaseRepository<ID,T extends BaseEntity<ID>> implements Repository<ID,T> {
-    private static final String URL = "jdbc:mysql://localhost/bookstore?user=root&password=";
+    private static final String URL = "jdbc:mysql://localhost/bookstore?user=root&password=Alternate:3q";
     private static final String USERNAME = System.getProperty("root");
-    private static final String PASSWORD = System.getProperty("root");
+    private static final String PASSWORD = System.getProperty("Alternate:3q");
 
     private String tableName;
     private SQLElement<ID,T> sqlElement;

@@ -19,34 +19,48 @@ import java.util.concurrent.*;
 
 public class Server {
     private ServerSocket serverSocket;
-
-    /**
-     * This executor service has 6 threads.
-     * So it means your server can process max 6 concurrent requests.
-     */
-
-    private ExecutorService executorService = Executors.newFixedThreadPool(6);
+    private ExecutorService executorService = Executors.newFixedThreadPool(10);
+    private ClientService clientService;
+    private BookService bookService;
+    private PurchaseService purchaseService;
+    private String signal = "endRead";
 
     public Server() {
+        Validator<Client> clientValidator = new ClientValidator();
+        Validator<Book> bookValidator = new BookValidator();
+        Validator<Purchase> purchaseValidator = new PurchaseValidator();
+
+        Repository<Long, Client> clientSQLRepository = new DatabaseRepository<Long,Client>(clientValidator,"Clients",new ClientSQL());
+        Repository<Long, Book> bookSQLRepository = new DatabaseRepository<Long,Book>(bookValidator,"Books",new BookSQL());
+        Repository<Long, Purchase> purchaseSQLRepository = new DatabaseRepository<Long,Purchase>(purchaseValidator,"Purchases",new PurchaseSQL());
+
+        Repository<Long, Book> bookRepository;
+        Repository<Long, Client> clientRepository;
+        Repository<Long, Purchase> purchaseRepository;
+
+        bookRepository = bookSQLRepository;
+        clientRepository = clientSQLRepository;
+        purchaseRepository = purchaseSQLRepository;
+
+        this.clientService = new ClientService(clientRepository);
+        this.bookService = new BookService(bookRepository);
+        this.purchaseService = new PurchaseService(purchaseRepository);
+
         runServer();
     }
 
     private void runServer() {
-        int serverPort = 8085;
+        int serverPort = 3333;
         try {
             System.out.println("Starting Server");
             serverSocket = new ServerSocket(serverPort);
 
-            for(;;) {
+            while(true) {
+                Socket client;
                 System.out.println("Waiting for request ...");
-                try {
-                    Socket s = serverSocket.accept();
-                    System.out.println("Processing request ...");
-                    executorService.submit(new ServiceRequest(s));
-                } catch(IOException ioe) {
-                    System.out.println("Error accepting connection!");
-                    ioe.printStackTrace();
-                }
+                client = serverSocket.accept();
+                System.out.println("Processing request ...");
+                executorService.submit(new ServiceRequest(client));
             }
         } catch(IOException e) {
             executorService.shutdown();
@@ -69,39 +83,14 @@ public class Server {
         System.exit(0);
     }
 
-    class ServiceRequest implements Runnable {
+    private class ServiceRequest implements Runnable {
 
-        private Socket socket;
+        private final Socket socket;
         private BufferedReader input = null;
         private PrintWriter output = null;
-        private ClientService clientService;
-        private BookService bookService;
-        private PurchaseService purchaseService;
-        String signal = "endRead";
 
         public ServiceRequest(Socket connection) {
             this.socket = connection;
-
-            Validator<Client> clientValidator = new ClientValidator();
-            Validator<Book> bookValidator = new BookValidator();
-            Validator<Purchase> purchaseValidator = new PurchaseValidator();
-
-            Repository<Long, Client> clientSQLRepository = new DatabaseRepository<Long,Client>(clientValidator,"Clients",new ClientSQL());
-            Repository<Long, Book> bookSQLRepository = new DatabaseRepository<Long,Book>(bookValidator,"Books",new BookSQL());
-            Repository<Long, Purchase> purchaseSQLRepository = new DatabaseRepository<Long,Purchase>(purchaseValidator,"Purchases",new PurchaseSQL());
-
-            Repository<Long, Book> bookRepository;
-            Repository<Long, Client> clientRepository;
-            Repository<Long, Purchase> purchaseRepository;
-
-            bookRepository = bookSQLRepository;
-            clientRepository = clientSQLRepository;
-            purchaseRepository = purchaseSQLRepository;
-            
-            this.clientService = new ClientService(clientRepository);
-            this.bookService = new BookService(bookRepository);
-            this.purchaseService = new PurchaseService(purchaseRepository);
-
             run();
         }
 
@@ -110,25 +99,25 @@ public class Server {
                 input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 output = new PrintWriter(socket.getOutputStream(), true);
 
-                String[] commands = { "Choose an action:",
-                                    "1. Add Clients",
-                                    "2. Add Books",
-                                    "3. Add Purchases",
-                                    "4. Update Clients",
-                                    "5. Update Books",
-                                    "6. Update Purchases",
-                                    "7. Delete Clients",
-                                    "8. Delete Books",
-                                    "9. Delete Purchases",
-                                    "10. Show all Clients",
-                                    "11. Show all Books",
-                                    "12. Show all Purchases",
-                                    "13. Filter Clients",
-                                    "14. Filter Books",
-                                    "15. Filter Purchases",
-                                    "0. Exit",
-                                    "",
-                                    "Choice: " };
+                String[] commands = {"Choose an action:",
+                        "1. Add Clients",
+                        "2. Add Books",
+                        "3. Add Purchases",
+                        "4. Update Clients",
+                        "5. Update Books",
+                        "6. Update Purchases",
+                        "7. Delete Clients",
+                        "8. Delete Books",
+                        "9. Delete Purchases",
+                        "10. Show all Clients",
+                        "11. Show all Books",
+                        "12. Show all Purchases",
+                        "13. Filter Clients",
+                        "14. Filter Books",
+                        "15. Filter Purchases",
+                        "0. Exit",
+                        "",
+                        "Choice: "};
 
                 output.println("Hello Bookstore!");
 
@@ -139,54 +128,62 @@ public class Server {
                 output.println(signal);
 
                 String in = input.readLine();
-                int choice = Integer.parseInt(in);
+                int choice;
+
+                try {
+                    choice = Integer.parseInt(in);
+                } catch (Exception e) {
+                    output.println("Invalid command!");
+                    output.println(signal);
+                    return;
+                }
 
                 while (choice != 0) {
                     switch (choice) {
                         case 1:
-                            addClients();
+                            addClients(input, output);
                             break;
                         case 2:
-                            addBooks();
+                            addBooks(input, output);
                             break;
                         case 3:
-                            addPurchases();
+                            addPurchases(input, output);
                             break;
                         case 4:
-                            updateClients();
+                            updateClients(input, output);
                             break;
                         case 5:
-                            updateBooks();
+                            updateBooks(input, output);
                             break;
                         case 6:
-                            updatePurchases();
+                            updatePurchases(input, output);
                             break;
                         case 7:
-                            delClients();
+                            delClients(input, output);
                             break;
                         case 8:
-                            delBooks();
+                            delBooks(input, output);
                             break;
                         case 9:
-                            delPurchases();
+                            delPurchases(input, output);
                             break;
                         case 10:
-                            printAllClients();
+                            printAllClients(input, output);
                             break;
                         case 11:
-                            printAllBooks();
+                            printAllBooks(input, output);
                             break;
                         case 12:
-                            printAllPurchases();
+                            printAllPurchases(input, output);
                             break;
                         case 13:
-                            filterClients();
+                            filterClients(input, output);
                             break;
                         case 14:
-                            filterBooks();
+                            filterBooks(input, output);
                             break;
                         case 15:
-                            filterPurchases();
+                            filterPurchases(input, output);
                             break;
                     }
 
@@ -205,12 +202,13 @@ public class Server {
             //Make sure to close
             try {
                 socket.close();
-            }catch(IOException ioe) {
+            } catch (IOException ioe) {
                 System.out.println("Error closing client connection");
             }
         }
+    }
 
-        private void filterClients() {
+        private void filterClients(BufferedReader input, PrintWriter output) {
             try {
                 output.println("Pattern: ");
                 output.println(signal);
@@ -225,7 +223,7 @@ public class Server {
             }
         }
 
-        private void filterBooks() {
+        private void filterBooks(BufferedReader input, PrintWriter output) {
             try {
                 output.println("Pattern: ");
                 output.println(signal);
@@ -240,7 +238,7 @@ public class Server {
             }
         }
 
-        private void filterPurchases() {
+        private void filterPurchases(BufferedReader input, PrintWriter output) {
             try {
                 output.println("1. Client ID or 2.Book ID: ");
                 output.println(signal);
@@ -266,30 +264,30 @@ public class Server {
             }
         }
 
-        private void printAllClients() {
+        private void printAllClients(BufferedReader input, PrintWriter output) {
             Set<domain.Client> clients = this.clientService.getAllClients();
             clients.stream().forEach((str) -> output.println(str.toString()));
             if(clients.isEmpty())
-                    System.out.println("There are no clients");
+                System.out.println("There are no clients");
         }
 
-        private void printAllBooks() {
+        private void printAllBooks(BufferedReader input, PrintWriter output) {
             Set<domain.Book> books = this.bookService.getAllBooks();
             books.stream().forEach((str) -> output.println(str.toString()));
             if(books.isEmpty())
                 System.out.println("There are no books");
         }
 
-        private void printAllPurchases() {
+        private void printAllPurchases(BufferedReader input, PrintWriter output) {
             Set<domain.Purchase> purchases = this.purchaseService.getAllPurchases();
             purchases.stream().forEach((str) -> output.println(str.toString()));
             if(purchases.isEmpty())
                 System.out.println("There are no purchases");
         }
 
-        private void addClients() {
+        private void addClients(BufferedReader input, PrintWriter output) {
             while (true) {
-                domain.Client client = readClient("");
+                domain.Client client = readClient("", input, output);
                 if (client == null || client.getId() < 0) {
                     break;
                 }
@@ -301,9 +299,9 @@ public class Server {
             }
         }
 
-        private void addBooks() {
+        private void addBooks(BufferedReader input, PrintWriter output) {
             while (true) {
-                Book book = readBook("");
+                Book book = readBook("", input, output);
                 if (book == null || book.getId() < 0) {
                     break;
                 }
@@ -315,9 +313,9 @@ public class Server {
             }
         }
 
-        private void addPurchases() {
+        private void addPurchases(BufferedReader input, PrintWriter output) {
             while (true) {
-                Purchase purchase = readPurchase("");
+                Purchase purchase = readPurchase("", input, output);
                 if (purchase == null || purchase.getId() < 0) {
                     break;
                 }
@@ -329,14 +327,14 @@ public class Server {
             }
         }
 
-        private void updateBooks() {
+        private void updateBooks(BufferedReader input, PrintWriter output) {
             while (true) {
-                Book book1 = readBook("old ");
+                Book book1 = readBook("old ", input, output);
                 if (book1 == null || book1.getId() < 0) {
                     break;
                 }
                 try {
-                    Book book2 = readBook("new ");
+                    Book book2 = readBook("new ", input, output);
                     this.bookService.delBook(book1);
                     this.bookService.addBook(book2);
                 } catch (ValidatorException e) {
@@ -345,14 +343,14 @@ public class Server {
             }
         }
 
-        private void updateClients() {
+        private void updateClients(BufferedReader input, PrintWriter output) {
             while (true) {
-                domain.Client client1 = readClient("old ");
+                domain.Client client1 = readClient("old ", input, output);
                 if (client1 == null || client1.getId() < 0) {
                     break;
                 }
                 try {
-                    domain.Client client2 = readClient("new ");
+                    domain.Client client2 = readClient("new ", input, output);
                     this.clientService.delClient(client1);
                     this.clientService.addClient(client2);
                 } catch (ValidatorException e) {
@@ -361,14 +359,14 @@ public class Server {
             }
         }
 
-        private void updatePurchases() {
+        private void updatePurchases(BufferedReader input, PrintWriter output) {
             while (true) {
-                Purchase purchase1 = readPurchase("old ");
+                Purchase purchase1 = readPurchase("old ", input, output);
                 if (purchase1 == null || purchase1.getId() < 0) {
                     break;
                 }
                 try {
-                    Purchase purchase2 = readPurchase("new ");
+                    Purchase purchase2 = readPurchase("new ", input, output);
                     this.purchaseService.delPurchase(purchase1);
                     this.purchaseService.addPurchase(purchase2);
                 } catch (ValidatorException e) {
@@ -377,9 +375,9 @@ public class Server {
             }
         }
 
-        private void delClients() {
+        private void delClients(BufferedReader input, PrintWriter output) {
             while (true) {
-                domain.Client client = readClient("");
+                domain.Client client = readClient("", input, output);
                 if (client == null || client.getId() < 0) {
                     break;
                 }
@@ -391,9 +389,9 @@ public class Server {
             }
         }
 
-        private void delBooks() {
+        private void delBooks(BufferedReader input, PrintWriter output) {
             while (true) {
-                Book book = readBook("");
+                Book book = readBook("", input, output);
                 if (book == null || book.getId() < 0) {
                     break;
                 }
@@ -405,9 +403,9 @@ public class Server {
             }
         }
 
-        private void delPurchases() {
+        private void delPurchases(BufferedReader input, PrintWriter output) {
             while (true) {
-                Purchase purchase = readPurchase("");
+                Purchase purchase = readPurchase("", input, output);
                 if (purchase == null || purchase.getId() < 0) {
                     break;
                 }
@@ -419,7 +417,7 @@ public class Server {
             }
         }
 
-        private domain.Client readClient(String s) {
+        private domain.Client readClient(String s, BufferedReader input, PrintWriter output) {
             output.println("Input " + s + "client ID:");
             output.println(signal);
 
@@ -440,7 +438,7 @@ public class Server {
             return null;
         }
 
-        private Book readBook(String s) {
+        private Book readBook(String s, BufferedReader input, PrintWriter output) {
             output.println("Input " + s + "book ID:");
             output.println(signal);
 
@@ -461,7 +459,7 @@ public class Server {
             return null;
         }
 
-        private Purchase readPurchase(String s) {
+        private Purchase readPurchase(String s, BufferedReader input, PrintWriter output) {
             output.println("Input " + s + "purchase ID:");
             output.println(signal);
 
@@ -485,5 +483,5 @@ public class Server {
             }
             return null;
         }
-    }
 }
+

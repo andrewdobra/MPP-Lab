@@ -8,7 +8,7 @@ public class Client {
     // initialize socket and input output streams
     private Socket socket = null;
     private BufferedReader input = null;
-    private PrintWriter out = null;
+    private PrintWriter output = null;
 
     // constructor to set IP address and port
     public Client(String address, int port)
@@ -19,22 +19,18 @@ public class Client {
             socket = new Socket(address, port);
             System.out.println("Connected to server!");
 
-            // takes input from terminal
             input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-            // sends output to the socket
-            out = new PrintWriter(socket.getOutputStream(), true);
+            output = new PrintWriter(socket.getOutputStream(), true);
         }
         catch(IOException i)
         {
             System.out.println("Error while establishing connection: " + i);
         }
 
-        // string to read message from input
         String answer = "";
 
         Scanner keyboard = new Scanner(System.in);
-        // keep reading until "0" is input
+
         while (!answer.equals("0"))
         {
             try
@@ -48,14 +44,7 @@ public class Client {
 
                 answer = keyboard.nextLine();
 
-                try {
-                    int command = Integer.parseInt(answer);
-                } catch (Exception e) {
-                    System.out.println("Invalid command!");
-                    return;
-                }
-
-                out.println(answer);
+                output.println(answer);
             }
             catch(IOException i)
             {
@@ -63,11 +52,10 @@ public class Client {
             }
         }
 
-        // close the connection
         try
         {
             input.close();
-            out.close();
+            output.close();
             socket.close();
         }
         catch(IOException i)
