@@ -4,11 +4,11 @@ import domain.Client;
 import domain.validators.*;
 
 import java.io.BufferedWriter;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.*;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +26,7 @@ public class ClientFileRepository extends InMemoryRepository<Long, Client> {
         loadData();
     }
 
-    @Override
+    /*@Override
     public Optional<Client> delete(Long aLong) {
         Optional<Client> result = super.delete(aLong);
 
@@ -34,7 +34,7 @@ public class ClientFileRepository extends InMemoryRepository<Long, Client> {
             saveFile(); //if something was removed then save the changes
 
         return result;
-    }
+    }*/
 
     /* rewrites the file*/
     public void saveFile() {
@@ -90,6 +90,43 @@ public class ClientFileRepository extends InMemoryRepository<Long, Client> {
         saveToFile(entity);
         return Optional.empty();
     }
+
+    /*@Override
+    public Optional<Client> delete(Long id) throws IllegalArgumentException {
+        Optional<Client> optional = super.delete(id);
+        File orig = new File(fileName);
+        File tmp = new File(fileName+".tmp");
+
+        try {
+            BufferedReader input = new BufferedReader(new FileReader(orig));
+            BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(tmp.getPath()), StandardOpenOption.APPEND);
+            for (String data; (data = input.readLine()) != null;)
+                if (!data.split(",")[0].equals(id.toString())) {
+                    bufferedWriter.write(data);
+                    bufferedWriter.newLine();
+                }
+
+
+            bufferedWriter = Files.newBufferedWriter(Paths.get(orig.getPath()));
+            input = new BufferedReader(new FileReader(tmp));
+            for (String data; (data = input.readLine()) != null;)
+                {
+                    bufferedWriter.write(data);
+                    bufferedWriter.newLine();
+                }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        tmp.delete();
+
+        if (optional.isPresent()) {
+            return optional;
+        }
+
+        return Optional.empty();
+    }*/
 
     private void saveToFile(Client entity) {
         Path path = Paths.get(fileName);

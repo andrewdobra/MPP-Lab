@@ -19,8 +19,8 @@ public class PurchaseXML extends XMLElement<Purchase>{
     public Purchase fromXML(Element e) {
 
         Long id = Long.parseLong(e.getAttribute("id"));
-        Long CID = Long.parseLong(e.getAttribute("CID"));
-        Long BID = Long.parseLong(e.getAttribute("BID"));
+        Long CID = Long.parseLong(e.getAttribute("ClientID"));
+        Long BID = Long.parseLong(e.getAttribute("BookID"));
         return new Purchase(id,CID,BID);
     }
 
