@@ -113,7 +113,7 @@ public class Console {
 
     private void filterPurchases() {
         System.out.println("1. Client ID or 2.Book ID: ");
-        Integer choice = keyboard.nextInt();
+        int choice = keyboard.nextInt();
         Long id = keyboard.nextLong();
         Set<Purchase> purchases;
         if (choice == 1)
