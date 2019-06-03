@@ -19,13 +19,13 @@ import java.util.concurrent.*;
 
 public class Server {
     private ServerSocket serverSocket;
-    private ExecutorService executorService = Executors.newFixedThreadPool(10);
+    private ExecutorService executorService;
     private ClientService clientService;
     private BookService bookService;
     private PurchaseService purchaseService;
     private String signal = "endRead";
 
-    public Server() {
+    public Server(int port) {
         Validator<Client> clientValidator = new ClientValidator();
         Validator<Book> bookValidator = new BookValidator();
         Validator<Purchase> purchaseValidator = new PurchaseValidator();
@@ -46,26 +46,29 @@ public class Server {
         this.bookService = new BookService(bookRepository);
         this.purchaseService = new PurchaseService(purchaseRepository);
 
-        runServer();
-    }
+        this.executorService = Executors.newFixedThreadPool(10);
 
-    private void runServer() {
-        int serverPort = 3333;
         try {
             System.out.println("Starting Server");
-            serverSocket = new ServerSocket(serverPort);
+            this.serverSocket = new ServerSocket(port);
+        } catch(IOException e) {
+            executorService.shutdown();
+            System.out.println("Error starting Server on " + port);
+            e.printStackTrace();
+        }
 
-            while(true) {
-                Socket client;
-                System.out.println("Waiting for request ...");
+        while(true) {
+            Socket client;
+            System.out.println("Waiting for request ...");
+
+            try {
                 client = serverSocket.accept();
                 System.out.println("Processing request ...");
                 executorService.submit(new ServiceRequest(client));
+            } catch(IOException e) {
+                System.out.println("Request failed!");
+                e.printStackTrace();
             }
-        } catch(IOException e) {
-            executorService.shutdown();
-            System.out.println("Error starting Server on " + serverPort);
-            e.printStackTrace();
         }
     }
 
@@ -91,7 +94,6 @@ public class Server {
 
         public ServiceRequest(Socket connection) {
             this.socket = connection;
-            run();
         }
 
         public void run() {

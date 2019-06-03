@@ -16,11 +16,11 @@ public class Client {
         // establish a connection
         try
         {
-            socket = new Socket(address, port);
+            this.socket = new Socket(address, port);
             System.out.println("Connected to server!");
 
-            input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            output = new PrintWriter(socket.getOutputStream(), true);
+            this.input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            this.output = new PrintWriter(socket.getOutputStream(), true);
         }
         catch(IOException i)
         {

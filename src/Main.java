@@ -15,9 +15,9 @@ public class Main {
         int start = new Scanner(System.in).nextInt();
 
         if (start == 0) {
-            Server server = new Server();
+            Server server = new Server(8085);
         } else if (start == 1) {
-            socket.Client client = new socket.Client("127.0.0.1", 3333);
+            socket.Client client = new socket.Client("127.0.0.1", 8085);
         } else if (start == 2) {
             Validator<Client> clientValidator = new ClientValidator();
             Validator<Book> bookValidator = new BookValidator();
